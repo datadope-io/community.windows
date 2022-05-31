@@ -1,0 +1,37 @@
+# This file is part of Ansible
+
+# Copyright: (c) 2022, DataDope (@datadope-io)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+---
+- name: Gather facts with invalid extended_data and null date format
+  win_process_facts:
+    extended_data: Error
+    date_format: null
+  register: invalid_var_and_date_run
+  ignore_errors: True
+
+- name: Gather facts with invalid extended data
+  win_process_facts:
+    extended_data: Error
+  register: invalid_var_run
+  ignore_errors: True
+
+- name: Gather facts with extended_data and custom date format
+  win_process_facts:
+    extended_data: True
+    date_format: yyyy
+  register: var_and_custom_state_date_run
+  ignore_errors: True
+
+- name: Gather facts with default values
+  win_process_facts:
+  register: default_run
+  ignore_errors: True
+
+- assert:
+    that:
+    - invalid_var_and_date_run.failed is defined and invalid_var_and_date_run.failed
+    - invalid_var_run.failed is defined and invalid_var_run.failed
+    - var_and_custom_state_date_run.failed is not defined or not var_and_custom_state_date_run.failed
+    - default_run.failed is not defined or not default_run.failed
+    - processes is defined
